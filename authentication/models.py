@@ -5,8 +5,6 @@ from django.utils import timezone
 
 
 class UserManager(BaseUserManager):
-    """Custom user manager for email-based authentication"""
-
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError('Email is required')
@@ -30,9 +28,6 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    """Custom user model with UUID primary key and email authentication"""
-
-    # Role choices
     ORGANIZER = 'organizer'
     ATTENDEE = 'attendee'
 
@@ -48,7 +43,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(
         max_length=20, choices=ROLE_CHOICES, default=ATTENDEE)
 
-    # Django required fields
     is_staff = models.BooleanField(default=False)
     date_created = models.DateTimeField(default=timezone.now)
 

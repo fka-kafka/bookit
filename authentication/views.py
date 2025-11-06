@@ -24,14 +24,12 @@ def register_user(request):
 
     if serializer.is_valid():
         user = serializer.save()
-        tokens = get_tokens_for_user(user)
 
         user_data = UserSerializer(user).data
 
         return Response({
             'message': 'User registered successfully',
-            'user': user_data,
-            'tokens': tokens
+            'user': user_data.get('fullname')
         }, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -40,29 +38,16 @@ def register_user(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login_user(request):
-    """
-    Login user and return JWT tokens
-
-    POST /auth/login
-    Body: {
-        "email": "user@example.com",
-        "password": "securepassword123"
-    }
-    """
     serializer = UserLoginSerializer(data=request.data)
 
     if serializer.is_valid():
         email = serializer.validated_data['email']
         password = serializer.validated_data['password']
-
-        # Authenticate user
         user = authenticate(request, email=email, password=password)
 
         if user is not None:
-            # Generate tokens
             tokens = get_tokens_for_user(user)
 
-            # Return user data with tokens
             user_data = UserSerializer(user).data
 
             return Response({
@@ -80,11 +65,5 @@ def login_user(request):
 
 @api_view(['GET'])
 def get_user_profile(request):
-    """
-    Get current user's profile
-
-    GET /auth/profile
-    Headers: Authorization: Bearer <access_token>
-    """
     serializer = UserSerializer(request.user)
     return Response(serializer.data, status=status.HTTP_200_OK)
