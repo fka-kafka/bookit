@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'authentication',
     'occasions',
+    'reservations'
 ]
 
 AUTH_USER_MODEL = 'authentication.User'

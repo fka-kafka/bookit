@@ -11,6 +11,7 @@ from .serializers import OccasionSerializer
 @api_view(['GET', 'POST'])
 def occasion_list(request):
     if request.method == 'GET':
+        # Filtering
         occasions = Occasion.objects.all()
         print(occasions)
 
@@ -50,6 +51,7 @@ def occasion_list(request):
         serializer = OccasionSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(organizer=request.user)
+            print(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

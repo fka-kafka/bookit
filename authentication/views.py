@@ -19,17 +19,18 @@ def get_tokens_for_user(user):
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
-def register_user(request):
+def register_user(request) -> Response:
     serializer = UserRegistrationSerializer(data=request.data)
 
     if serializer.is_valid():
         user = serializer.save()
 
         user_data = UserSerializer(user).data
+        print(user_data, type(user_data))
 
         return Response({
             'message': 'User registered successfully',
-            'user': user_data.get('fullname')
+            'user': user_data.get('email')
         }, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -52,7 +53,7 @@ def login_user(request):
 
             return Response({
                 'message': 'Login successful',
-                'user': user_data,
+                'user': user_data.get('full_name'),
                 'tokens': tokens
             }, status=status.HTTP_200_OK)
         else:
