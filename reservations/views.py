@@ -5,12 +5,12 @@ from rest_framework.response import Response
 
 
 from occasions.models import Occasion
+from authentication.models import User
 from .models import Reservation
 
-# Create your views here.
-
-
 # View for creating reservation
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def make_reservation(request, occasion_id):
@@ -42,10 +42,26 @@ def make_reservation(request, occasion_id):
 
 # View for approving reservations
 
-@api_view(['GET'])
+@api_view(['PUT'])
 @permission_classes([IsAuthenticated])
-def get_reservations(request):
-    """ Get all reservations """
-    return Response({
-        'results': []}
-    )
+def approve_reservation(request, reservation_id):
+    user: User = request.user
+    if user.is_attendee:
+        return Response({
+            'message': 'Only organizers can approve RSVPs.'
+        }, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    try:
+        reservation = Reservation.objects.get(reservation_id=reservation_id)
+        reservation.approved = True
+        reservation.save()
+        return Response({
+            "message": "status changed",
+            "details": f"{reservation.approved}",
+        })
+    except Exception as exception:
+        return Response(
+            {
+                'message': f'An error occured: {exception}'
+            }
+        )

@@ -4,6 +4,6 @@ from . import views
 urlpatterns = [
     path('occasions/<uuid:occasion_id>/rsvp',
          views.make_reservation, name='rsvp'),
-    path('occasions/reservations',
-         views.get_reservations, name='get-reservations'),
+    path('occasions/<uuid:reservation_id>/approve',
+         views.approve_reservation, name='approve-rsvp'),
 ]
