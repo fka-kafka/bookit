@@ -29,6 +29,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    # Swagger / OpenAPI docs
+    'drf_yasg',
     'authentication',
     'occasions',
     'reservations'
@@ -169,3 +171,17 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# drf_yasg / Swagger UI settings
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+            'description': 'JWT Authorization header using the Bearer scheme. Example: "Bearer <token>"'
+        }
+    },
+    # Don't try to use Django session auth in the docs UI (we use JWT)
+    'USE_SESSION_AUTH': False,
+}

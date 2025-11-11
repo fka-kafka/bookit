@@ -5,6 +5,10 @@ from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 
+# drf_yasg
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
 
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserSerializer
 
@@ -17,6 +21,12 @@ def get_tokens_for_user(user):
     }
 
 
+@swagger_auto_schema(
+    methods=['post'],
+    request_body=UserRegistrationSerializer,
+    responses={201: openapi.Response(
+        'Created', UserRegistrationSerializer), 400: 'Bad Request'}
+)
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register_user(request) -> Response:
@@ -36,6 +46,12 @@ def register_user(request) -> Response:
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@swagger_auto_schema(
+    methods=['post'],
+    request_body=UserLoginSerializer,
+    responses={200: 'Login successful',
+               400: 'Bad Request', 401: 'Unauthorized'}
+)
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login_user(request):
@@ -64,6 +80,10 @@ def login_user(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@swagger_auto_schema(
+    methods=['get'],
+    responses={200: openapi.Response('OK', UserSerializer)}
+)
 @api_view(['GET'])
 def get_user_profile(request):
     serializer = UserSerializer(request.user)

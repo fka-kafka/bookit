@@ -3,6 +3,10 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+# drf_yasg
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
 
 from occasions.models import Occasion
 from authentication.models import User
@@ -11,6 +15,14 @@ from .models import Reservation
 # View for creating reservation
 
 
+@swagger_auto_schema(
+    methods=['post'],
+    manual_parameters=[
+        openapi.Parameter('occasion_id', openapi.IN_PATH,
+                          description="Occasion UUID", type=openapi.TYPE_STRING, format='uuid')
+    ],
+    responses={201: 'RSVP submitted', 404: 'Not Found', 400: 'Bad Request'}
+)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def make_reservation(request, occasion_id):
@@ -42,6 +54,14 @@ def make_reservation(request, occasion_id):
 
 # View for approving reservations
 
+@swagger_auto_schema(
+    methods=['put'],
+    manual_parameters=[
+        openapi.Parameter('reservation_id', openapi.IN_PATH,
+                          description="Reservation UUID", type=openapi.TYPE_STRING, format='uuid')
+    ],
+    responses={200: 'Status changed', 404: 'Not Found', 406: 'Not Acceptable'}
+)
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def approve_reservation(request, reservation_id):

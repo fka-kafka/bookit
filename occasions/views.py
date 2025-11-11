@@ -2,12 +2,35 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+# drf_yasg
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from django.core.paginator import Paginator
 from django.db.models import Q
 from .models import Occasion
 from .serializers import OccasionSerializer
 
 
+@swagger_auto_schema(
+    method='get',
+    manual_parameters=[
+        openapi.Parameter('location', openapi.IN_QUERY,
+                          description="Filter by location", type=openapi.TYPE_STRING),
+        openapi.Parameter('date', openapi.IN_QUERY,
+                          description="Filter by date (YYYY-MM-DD)", type=openapi.TYPE_STRING),
+        openapi.Parameter('keyword', openapi.IN_QUERY,
+                          description="Search keyword", type=openapi.TYPE_STRING),
+        openapi.Parameter('page', openapi.IN_QUERY,
+                          description="Page number", type=openapi.TYPE_INTEGER),
+    ],
+    responses={200: openapi.Response('List', OccasionSerializer(many=True))}
+)
+@swagger_auto_schema(
+    method='post',
+    request_body=OccasionSerializer,
+    responses={201: openapi.Response(
+        'Created', OccasionSerializer), 400: 'Bad Request'}
+)
 @api_view(['GET', 'POST'])
 def occasion_list(request):
     if request.method == 'GET':
@@ -56,6 +79,33 @@ def occasion_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@swagger_auto_schema(
+    method='get',
+    manual_parameters=[
+        openapi.Parameter('occasion_id', openapi.IN_PATH,
+                          description="Occasion UUID", type=openapi.TYPE_STRING, format='uuid')
+    ],
+    responses={200: openapi.Response(
+        'OK', OccasionSerializer), 404: 'Not Found'}
+)
+@swagger_auto_schema(
+    method='put',
+    request_body=OccasionSerializer,
+    manual_parameters=[
+        openapi.Parameter('occasion_id', openapi.IN_PATH,
+                          description="Occasion UUID", type=openapi.TYPE_STRING, format='uuid')
+    ],
+    responses={200: openapi.Response(
+        'OK', OccasionSerializer), 400: 'Bad Request', 404: 'Not Found'}
+)
+@swagger_auto_schema(
+    method='delete',
+    manual_parameters=[
+        openapi.Parameter('occasion_id', openapi.IN_PATH,
+                          description="Occasion UUID", type=openapi.TYPE_STRING, format='uuid')
+    ],
+    responses={204: 'No Content', 403: 'Forbidden', 404: 'Not Found'}
+)
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def occasion_detail(request, occasion_id):
