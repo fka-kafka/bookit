@@ -1,6 +1,6 @@
 # Bookit
 
-Lightweight Django + DRF project for managing occasions and reservations.
+Lightweight Django + DRF API for managing occasions and reservations.
 
 This repository includes DRF endpoints and Swagger/OpenAPI documentation powered by `drf_yasg`.
 
